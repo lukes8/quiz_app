@@ -1,5 +1,4 @@
-package com.mydeveloperplanet.mygoogleappengineplanet.mygoogleappengineplanet;
-
+package com.learning.quizapp;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
