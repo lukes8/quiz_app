@@ -7,8 +7,8 @@ import javax.persistence.Id;
 public class QuizQuestionEntry {
 
     @Id
-    private Long categoryId;
     private Long questionId;
+    private Long categoryId;
     private String question;
     private String correctAnswer;
 }
