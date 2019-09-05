@@ -37,6 +37,32 @@ public class QuizCategoryEntryController {
         return "NONE";
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/add")
+    public String findById() throws Exception {
+
+        QuizCategoryEntry quizCategoryEntry = new QuizCategoryEntry();
+        Long newId = getNewId();
+        quizCategoryEntry.setId(newId);
+        quizCategoryEntry.setName("Test category num" + newId);
+        quizCategoryEntryRepository.save(quizCategoryEntry);
+
+        return "ADDED";
+    }
+
+    private Long getNewId() throws Exception {
+        List<QuizCategoryEntry> all = quizCategoryEntryRepository.findAll();
+        if (all != null && all.size() != 0) {
+            Long lastId = all.get(0).getId();
+            for (int i = 1; i < all.size(); i++) {
+                if (all.get(i).getId() > lastId) {
+                    lastId = all.get(i).getId();
+                }
+            }
+            return lastId+1;
+        }
+        throw new Exception("categories not found");
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public String create(@RequestBody QuizCategoryEntry model) {
 
