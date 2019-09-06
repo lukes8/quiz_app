@@ -1,0 +1,457 @@
+<!doctype html>
+<html>
+
+<!-- Hints:
+     shift alt F - format kodu
+     ctrl shift K - delete line
+     ctrl alt J or L - jump on bookmarks
+     ctrl alt K - add bookmarks
+-->
+<!--
+ -->
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="quiz_style.css">
+    <link rel="stylesheet" type="text/css" href="magic-check.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="quiz-app.js"></script>
+</head>
+
+<body>
+<div ng-app="myApp" ng-controller="TaskController" data-ng-init="onLoad()" ng-init="
+                                                countries = [ {locale: 'en-US', name: 'United states'},
+                                                              {locale: 'en-FR', name: 'France'} ]">
+    <h1>Quiz Application</h1>
+    <!--
+<div class="check-element animate-show-hide" ng-hide="resultsVisibled">
+    test
+</div> -->
+
+    <div class="basic_background">
+        <!-- CATEGORY LIST -->
+        <div class="titles">
+            <h2>Category List</h2>
+        </div>
+
+        <ul style="list-style-type: disc;" ng-repeat="c in categoryList">
+            <li><a href="#" ng-click="selectCategory(c)">{{c.name}} ({{totalCategoryQuestions(c)}})</a></li>
+        </ul>
+    </div>
+
+    <form name="testForm">
+        <div class="basic_background">
+            <!-- QUESTION LIST -->
+
+            <div class="titles">
+                <h2>Question List ({{selectCategoryDisplayed}}) </h2>
+            </div>
+
+            <ol id="ol_question_list" ng-repeat="q in questionList | filter : categoryFilter">
+                <li style="clear: right;display: inline-block" class="question">
+                    <strong class="question">
+                        {{q.number}}. {{q.question}}
+
+                        <div ng-if="q.isTypeImg === true">
+                            <button ng-click="setImage(q.imgUrl)" style="float: right;" type="button"
+                                    data-toggle="modal" data-target="#modalImage">
+                                Show Image
+                            </button>
+                            <div class="modal" id="modalImage">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Image</h4>
+                                            <button type="button" class="close"
+                                                    data-dismiss="modal">&times;
+                                            </button>
+                                        </div>
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                            <img src="img/{{modalSettings.imageUrl}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </strong>
+                    <br>
+                    <div id="chb_answer_list">
+                        <blockquote>
+                            <p ng-repeat="ans in q.answers" class="answer">
+                                <input class="magic-radio" type="radio" ng-model="q.answerByUser" value="{{ans}}"
+                                       name="radio_{{q.number}}" id="radio_{{q.number}}_{{ans}}"/>
+                                <label for="radio_{{q.number}}_{{ans}}">{{ans}}</label>
+                            </p>
+                        </blockquote>
+                    </div>
+                </li>
+            </ol>
+
+            <!-- BUTTONS -->
+            <div class="btn_evaluate">
+                <button ng-click="ok()">Evaluate</button>
+                <button ng-click="clear()">Reset</button>
+                <br><br>
+
+                <button ng-click="saveQuestions()">Save Questions</button>
+                <button onclick="document.getElementById('files').click()">Load Questions</button>
+                <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
+                <!-- <button ng-click="addQuestionDlg()">Add Question</button> -->
+                <button type="button" data-toggle="modal" data-target="#myModal">
+                    Add Question
+                </button>
+            </div>
+
+            <div class="container">
+                <!-- MODAL DLG ADD QUESTION -->
+                <div class="modal" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Question</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <form>
+                                    <label for="txQ">Your Question:</label>
+                                    <!-- <br> -->
+                                    <input type="text" ng-model="userQuestion">
+                                    <br>
+                                    <label for="txQ">Your Category:</label>
+                                    <!-- <br> -->
+                                    <select name="singleSelect" id="singleSelect" ng-model='categoryIdModel'>
+                                        <option value="">-----Please select-----</option>
+                                        <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}
+                                        </option>
+                                    </select>
+                                    <br>
+                                    <label for="txCA">Correct Answer:</label>
+                                    <!-- <br> -->
+                                    <input type="text" ng-model="userCorrectAnswer">
+                                    <br>
+                                    <label for="txA">Available Answers (separated with comma):</label>
+                                    <br>
+                                    <textarea id="textareaEdit" ng-model="userAnswers"></textarea>
+                                    <br>
+                                    <!-- <button ng-click="addQuestion()">Add Question</button> -->
+                                    <!-- <br> -->
+                                    <label for="err">{{errorText}}</label>
+                                </form>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" ng-click="addQuestion()" class="btn btn-success">Add
+                                    Question
+                                </button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- <br> -->
+
+        <!-- RESULTS -->
+        <div class="basic_background" ng-hide="!resultsVisibled">
+            <h2 class="titles" style="text-align: left">
+                Results</h2>
+            <div style="text-align: center;display: block">
+
+                <strong>
+                    You have achieved the score <h2>{{resultPercent | number : 2}} %</h2>
+                </strong>
+
+            </div>
+            <br>
+            <table class="resultsAchieved" ng-if="resultPercent !== 100">
+                <thead>
+                <tr>
+                    <th>num.</th>
+                    <th>question</th>
+                    <th>correct answer</th>
+                    <th>your answer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="q in answerListByUser">
+                    <td>{{q.number}}</td>
+                    <td>{{q.question}}</td>
+                    <td>{{q.answerCorrect}}</td>
+                    <td style="text-decoration: line-through;color: red">{{q.answerByUser}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </form>
+
+    <form name="testForm">
+        <table>
+            <!-- <tr>
+                <td style="text-align: left">
+                    <h2>Category List</h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <ul style="list-style-type: disc;" ng-repeat="c in categoryList">
+                        <li><a href="#" ng-click="selectCategory(c)">{{c.name}}</a></li>
+                    </ul>
+                </td>
+            </tr> -->
+            <tr>
+                <td style="text-align: left">
+                    <h2>Question List ({{selectCategoryDisplayed}}) </h2>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <ol id="ol_question_list" ng-repeat="q in questionList | filter : categoryFilter">
+                        <li style="clear: right;" class="question"><strong class="question">
+                            {{q.number}}. {{q.question}}
+                        </strong>
+
+                            <div id="chb_answer_list">
+                                <blockquote>
+                                    <div ng-if="q.isTypeImg === true">
+                                        <a href="img/{{q.imgUrl}}"> <img src="img/{{q.imgUrl}}"></a>
+                                    </div>
+                                    <p ng-repeat="ans in q.answers" class="answer"><label><input type="radio"
+                                                                                                 ng-model="q.answerByUser"
+                                                                                                 value="{{ans}}"/>{{ans}}</label>
+                                    </p>
+                                </blockquote>
+                            </div>
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;;">
+                    <button ng-click="ok()">Evaluate</button>
+                    <button ng-click="clear()">Reset</button>
+                    <br><br>
+                    <button ng-click="saveQuestions()">Save Questions</button>
+                    <button onclick="document.getElementById('files').click()">Load Questions</button>
+                    <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
+                    <!-- <button ng-click="addQuestionDlg()">Add Question</button> -->
+
+                    <div class="container">
+                        <button type="button" data-toggle="modal" data-target="#myModal">
+                            Add Question
+                        </button>
+
+                        <!-- The Modal -->
+                        <div class="modal" id="myModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Add Question</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        <form>
+                                            <label for="txQ">Your Question:</label>
+                                            <!-- <br> -->
+                                            <input type="text" ng-model="userQuestion">
+                                            <br>
+                                            <label for="txQ">Your Category:</label>
+                                            <!-- <br> -->
+                                            <select name="singleSelect" id="singleSelect"
+                                                    ng-model='categoryIdModel'>
+                                                <option value="">-----Please select-----</option>
+                                                <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}
+                                                </option>
+                                            </select>
+                                            <br>
+                                            <label for="txCA">Correct Answer:</label>
+                                            <!-- <br> -->
+                                            <input type="text" ng-model="userCorrectAnswer">
+                                            <br>
+                                            <label for="txA">Available Answers (separated with comma):</label>
+                                            <br>
+                                            <textarea id="textareaEdit" ng-model="userAnswers"></textarea>
+                                            <br>
+                                            <!-- <button ng-click="addQuestion()">Add Question</button> -->
+                                            <!-- <br> -->
+                                            <label for="err">{{errorText}}</label>
+                                        </form>
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" ng-click="addQuestion()" class="btn btn-success">Add
+                                            Question
+                                        </button>
+                                        <button type="button" class="btn btn-danger"
+                                                data-dismiss="modal">Close
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </td>
+            </tr>
+
+            <tr ng-hide="!resultsVisibled">
+                <td>
+                    <hr>
+                </td>
+            </tr>
+            <tr ng-hide="!resultsVisibled">
+                <td style="text-align: left">
+                    <h2 style="text-align: left">
+                        Result achieved is {{resultPercent | number : 2}} % </h2>
+
+                    <table class="resultsAchieved" ng-if="resultPercent !== 100">
+                        <thead>
+                        <tr>
+                            <th>num.</th>
+                            <th>question</th>
+                            <th>correct answer</th>
+                            <th>your answer</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="q in answerListByUser">
+                            <td>{{q.number}}</td>
+                            <td>{{q.question}}</td>
+                            <td>{{q.answerCorrect}}</td>
+                            <td style="text-decoration: line-through;color: red">{{q.answerByUser}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <hr>
+                </td>
+            </tr>
+
+            <!-- --------------------------------------------------------------
+                                    FOR TESTING
+                 ----------------------------------------------------------------- -->
+            <tr>
+                <td>
+                    {{text}}
+                    <br/>
+                    {{chbAnswer}}
+                    <br/>
+                    <label>Value:
+                        <input type="checkbox" ng-model="checkboxModel.value1">
+                    </label>
+                    <br/>
+                    {{checkboxModel.value1}}
+
+                    <br>
+                    <ol ng-repeat="q in questionList">
+                        <li>{{q.question}}
+                            <ol ng-repeat="a in q.answers">
+                                <li>{{a}}</li>
+                            </ol>
+                        </li>
+                    </ol>
+                    <br>
+                    <input type="button" ng-click="saveQuestions()" value="Save questions">
+                    <br>
+                    {{countries[0].locale}} - {{countries[0].name}}
+                    <br>
+                    <input type="file" ng-file-select="onFileSelect($files)">
+                    <br>
+                    <my-employee role="developer"></my-employee>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <form>
+        <label for="txQ">Your Question:</label>
+        <br>
+        <input type="text" ng-model="userQuestion">
+        <br>
+        <label for="txQ">Your Category:</label>
+        <br>
+        <select name="singleSelect" id="singleSelect" ng-model='categoryIdModel'>
+            <option value="">-----Please select-----</option>
+            <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}</option>
+        </select>
+        <br>
+        <label for="txA">Available Answers (separated with comma):</label>
+        <br>
+        <textarea id="textareaEdit" ng-model="userAnswers"></textarea>
+        <br>
+        <label for="txCA">Correct Answer:</label>
+        <br>
+        <input type="text" ng-model="userCorrectAnswer">
+        <br>
+        <button ng-click="addQuestion()">Add Question</button>
+        <br>
+        <label for="err">{{errorText}}</label>
+    </form>
+
+    <form>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                   placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <input class="magic-radio" type="radio" name="radio" id="1" value="option">
+    <label for="1">
+        Radio button
+    </label>
+    <input class="magic-radio" type="radio" name="radio" id="2" value="option">
+    <label for="2">
+        Radio button
+    </label>
+    <input class="magic-radio" type="radio" name="radio" id="3" value="option">
+    <label for="2">
+        Radio button
+    </label>
+
+    <!-- <div class="radio-btn">
+    <input type="radio" value="value-1" id="rc2" name="rc2">
+    <label for="rc2" onclick>Checkbox</label>
+    </div> -->
+    <!-- myApp ctrl END -->
+</div>
+</body>
+
+</html>
