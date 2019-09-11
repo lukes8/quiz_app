@@ -156,12 +156,12 @@ img:hover {
     /* font-family: "Arial Black", Gadget, sans-serif; */
     /* font-family: 'Chau Philomene One', sans-serif; */
     /* display: block; */
-    /* margin: 0 auto;  */
-    font-size: 18px;
-    font-weight: 900;
+    /*margin: 0 auto;*/
+    font-size: 15px;
+    font-weight: 500;
     width: 180px;
-    padding: 5px;
-    height: 50px;
+   /* padding: 5px;*/
+    height: 30px;
 }
 
 .btn_evaluate button:hover {

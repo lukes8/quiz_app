@@ -60,7 +60,7 @@ public class QuizCategoryEntryController {
             }
             return lastId+1;
         }
-        throw new Exception("categories not found");
+        return 0L;
     }
 
     @RequestMapping(method = RequestMethod.POST)
