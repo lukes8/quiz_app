@@ -41,16 +41,37 @@ public class QuizQuestionEntryController {
     public String create(@RequestBody QuizQuestionEntry model) {
 
         QuizQuestionEntry save = null;
-        if (model != null) {
-            save = quizQuestionEntryRepository.save(model);
+        if (model == null) {
+            return "model is null!";
         }
 
-        if (save != null) {
-            Gson gson = new Gson();
-            String json = gson.toJson(save);
-            return json;
+        if (model.getId() == null) {
+            model.setId(getNewId());
         }
-        return "NONE";
+
+        Optional<QuizQuestionEntry> entry = quizQuestionEntryRepository.findById(model.getId());
+        if (entry.isPresent()) {
+            return "Question already exists!";
+        }
+
+        save = quizQuestionEntryRepository.save(model);
+        if (save == null) {
+            return "NONE";
+        }
+
+        Gson gson = new Gson();
+        String json = gson.toJson(save);
+        return json;
     }
 
+    private Long getNewId() {
+        List<QuizQuestionEntry> all = quizQuestionEntryRepository.findAll();
+        Long idMax = 0L;
+        for (QuizQuestionEntry quizQuestionEntry : all) {
+            if (quizQuestionEntry.getId() > idMax) {
+                idMax = quizQuestionEntry.getId();
+            }
+        }
+        return idMax + 1;
+    }
 }

@@ -2,7 +2,7 @@
 <html>
 
 <!-- Hints:
-     shift alt F - format kodu
+     shift alt F - format code
      ctrl shift K - delete line
      ctrl alt J or L - jump on bookmarks
      ctrl alt K - add bookmarks
@@ -94,16 +94,17 @@
         <!-- BUTTONS -->
         <div class="btn_evaluate">
             <button ng-click="ok()">Evaluate</button>
-            <button ng-click="clear()">Reset</button>
+            <button ng-click="hideResultsTop()">{{resultsVisibledText}}</button>
             <br><br>
-
-            <button ng-click="saveQuestions()">Save Questions</button>
-            <button onclick="document.getElementById('files').click()">Load Questions</button>
-            <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
-            <!-- <button ng-click="addQuestionDlg()">Add Question</button> -->
-            <button type="button" data-toggle="modal" data-target="#myModal">
-                Add Question
+            <button title="Save Questions to JSON file" ng-click="saveQuestionsToJson()">Save</button>
+            <button title="Load Questions from JSON file" onclick="document.getElementById('files').click()">Load
             </button>
+            <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
+            <br><br>
+            <button title="Add Question over REST to DB" type="button" data-toggle="modal" data-target="#myModal">Add
+                Question
+            </button>
+
         </div>
 
         <div class="container">
@@ -149,7 +150,7 @@
 
                         <!-- Modal footer -->
                         <div class="modal-footer">
-                            <button type="button" ng-click="addQuestion()" class="btn btn-success">Add
+                            <button type="button" ng-click="modalDlgAddQuestion()" class="btn btn-success">Add
                                 Question
                             </button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
