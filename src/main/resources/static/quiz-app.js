@@ -76,9 +76,9 @@
 
 
     ngModule.controller("QuizController", QuizController);
-    QuizController.$inject = ['$scope', '$q', '$http', '__env'];
+    QuizController.$inject = ['$scope', '$q', '$http', '$timeout', '__env'];
 
-    function QuizController($scope, $q, $http, __env) {
+    function QuizController($scope, $q, $http, $timeout, __env) {
 
         // VARIABLES
         var _this = $scope;
@@ -87,6 +87,7 @@
         $scope.URL_REST_API_CATEGORY = $scope.URL_BASE + "/rest/quiz-category";
         $scope.URL_REST_API_QUESTION = $scope.URL_BASE + "/rest/quiz-question";
 
+        $scope.isLoading = false;
         $scope.text = "...";
         $scope.logEnabled = true;
         $scope.checkboxModel = {
@@ -191,7 +192,7 @@
         $scope.userCorrectAnswer = "";
         $scope.errorText = "...";
         $scope.selectedCategoryId = 0;
-        $scope.categoryIdModel = 0;
+        $scope.categoryIdModel = -1;
         $scope.selectCategoryDisplayed = "All";
         $scope.modalSettings = {};
         //$scope.categoryList[0].id;   //default
@@ -245,34 +246,39 @@
             downloadLink.click();
         }
 
-        $scope.ok = function () {
-            var vm = $scope;
-            vm.text = "clicked ok";
-            var correctNum = 0;
-            vm.answerListByUser = [];
-            var questionCategoryNum = 0;
-            angular.forEach(vm.questionList, function (value, key) {
-                if (vm.selectedCategoryId === 0 || vm.selectedCategoryId === value.categoryId) {
-                    questionCategoryNum = questionCategoryNum + 1;
-                    if (value.answerByUser === value.answerCorrect)
-                        correctNum = correctNum + 1;
-                    else
-                        vm.answerListByUser.push(angular.copy(value));
-                }
-            })
-            vm.resultPercent = (correctNum / questionCategoryNum) * 100;
-            _this.hideResults(true);
-            _this.log(vm.answerListByUser);
+        $scope.evaluate = function () {
+
+            _this.isLoading = true;
+
+            $timeout(function () {
+                var correctNum = 0;
+                _this.answerListByUser = [];
+                var questionCategoryNum = 0;
+                angular.forEach(_this.questionList, function (value, key) {
+                    if (_this.selectedCategoryId === 0 || _this.selectedCategoryId === value.categoryId) {
+                        questionCategoryNum = questionCategoryNum + 1;
+                        if (value.answerByUser === value.answerCorrect)
+                            correctNum = correctNum + 1;
+                        else
+                            _this.answerListByUser.push(angular.copy(value));
+                    }
+                })
+                _this.resultPercent = (correctNum / questionCategoryNum) * 100;
+                _this.hideResults(true);
+                _this.log(_this.answerListByUser);
+                _this.isLoading = false;
+
+            }, 1000);
+
         }
 
         $scope.clear = function () {
             $scope.text = "clicked clear";
-            var vm = $scope;
-            angular.forEach(vm.questionList, function (value, key) {
+            angular.forEach(_this.questionList, function (value, key) {
                 value.answerByUser = "";
             })
-            vm.resultsVisibled = false;
-            vm.answerListByUser = [];
+            _this.resultsVisibled = false;
+            _this.answerListByUser = [];
         }
 
         $scope.hideResultsTop = function () {

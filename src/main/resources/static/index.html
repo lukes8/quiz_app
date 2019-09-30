@@ -12,197 +12,255 @@
 
 <head>
     <meta charset="utf-8">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="quiz_style.css">
     <link rel="stylesheet" type="text/css" href="magic-check.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     <script src="env.js"></script>
     <script src="quiz-app.js"></script>
 </head>
 
 <body ng-controller="QuizController" data-ng-init="onLoad()" ng-init="countries = [ {locale: 'en-US', name: 'United states'},
                                                               {locale: 'en-FR', name: 'France'} ]">
-<div id="quiz">
 
-    <div>
+    <div ng-if="isLoading" id="overlay">
+        <div id="spinner"></div>
+    </div>
 
-        <h1>Quiz Application</h1>
+    <div id="quiz">
+        <div>
+            <h1>Quiz Application</h1>
 
-        <div class="basic_background">
+            <div class="basic_background">
 
-            <!-- CATEGORY LIST -->
-            <div class="titles">
-                <h2>Category List</h2>
+                <!-- CATEGORY LIST -->
+                <div class="titles">
+                    <h2>Category List</h2>
+                </div>
+
+                <ul style="list-style-type: disc;" ng-repeat="c in categoryList">
+                    <li><a href="#" ng-click="selectCategory(c)">{{c.name}} ({{totalCategoryQuestions(c)}})</a></li>
+                </ul>
             </div>
 
-            <ul style="list-style-type: disc;" ng-repeat="c in categoryList">
-                <li><a href="#" ng-click="selectCategory(c)">{{c.name}} ({{totalCategoryQuestions(c)}})</a></li>
-            </ul>
-        </div>
+            <!--    <form name="testForm">-->
+            <div class="basic_background">
+                <!-- QUESTION LIST -->
 
-        <!--    <form name="testForm">-->
-        <div class="basic_background">
-            <!-- QUESTION LIST -->
+                <div class="titles">
+                    <h2>Question List ({{selectCategoryDisplayed}}) </h2>
+                </div>
 
-            <div class="titles">
-                <h2>Question List ({{selectCategoryDisplayed}}) </h2>
-            </div>
+                <ol id="ol_question_list" ng-repeat="q in questionList | filter : categoryFilter">
+                    <li style="clear: right;display: inline-block" class="question">
+                        <strong class="question">
+                            {{q.number}}. {{q.question}}
 
-            <ol id="ol_question_list" ng-repeat="q in questionList | filter : categoryFilter">
-                <li style="clear: right;display: inline-block" class="question">
-                    <strong class="question">
-                        {{q.number}}. {{q.question}}
-
-                        <div ng-if="q.isTypeImg === true">
-                            <button ng-click="setImage(q.imgUrl)" style="float: right;" type="button"
+                            <div ng-if="q.isTypeImg === true">
+                                <button ng-click="setImage(q.imgUrl)" style="float: right;" type="button"
                                     data-toggle="modal" data-target="#modalImage">
-                                Show Image
-                            </button>
-                            <div class="modal" id="modalImage">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Image</h4>
-                                            <button type="button" class="close" data-dismiss="modal">&times;
-                                            </button>
-                                        </div>
-                                        <!-- Modal body -->
-                                        <div class="modal-body">
-                                            <img src="img/{{modalSettings.imageUrl}}">
+                                    Show Image
+                                </button>
+                                <div class="modal" id="modalImage">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <!-- Modal Header -->
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Image</h4>
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <!-- Modal body -->
+                                            <div class="modal-body">
+                                                <img src="img/{{modalSettings.imageUrl}}">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </strong>
+                        <br>
+                        <div id="chb_answer_list">
+                            <blockquote>
+                                <p ng-repeat="ans in q.answers" class="answer">
+                                    <input class="magic-radio" type="radio" ng-model="q.answerByUser" value="{{ans}}"
+                                        name="radio_{{q.number}}" id="radio_{{q.number}}_{{ans}}" />
+                                    <label for="radio_{{q.number}}_{{ans}}">{{ans}}</label>
+                                </p>
+                            </blockquote>
                         </div>
-                    </strong>
-                    <br>
-                    <div id="chb_answer_list">
-                        <blockquote>
-                            <p ng-repeat="ans in q.answers" class="answer">
-                                <input class="magic-radio" type="radio" ng-model="q.answerByUser" value="{{ans}}"
-                                       name="radio_{{q.number}}" id="radio_{{q.number}}_{{ans}}"/>
-                                <label for="radio_{{q.number}}_{{ans}}">{{ans}}</label>
-                            </p>
-                        </blockquote>
-                    </div>
-                </li>
-            </ol>
+                    </li>
+                </ol>
 
-            <!-- BUTTONS -->
-            <div class="btn_evaluate">
-                <button ng-click="ok()">Evaluate</button>
-                <button ng-click="hideResultsTop()">{{resultsVisibledText}}</button>
-                <br><br>
-                <button title="Save Questions to JSON file" ng-click="saveQuestionsToJson()">Save</button>
-                <button title="Load Questions from JSON file"
+                <!-- BUTTONS -->
+                <div class="btn_evaluate">
+                    <button ng-click="evaluate()">Evaluate</button>
+                    <button ng-click="hideResultsTop()">{{resultsVisibledText}}</button>
+                    <br><br>
+                    <button title="Save Questions to JSON file" ng-click="saveQuestionsToJson()">Save</button>
+                    <button title="Load Questions from JSON file"
                         onclick="document.getElementById('files').click()">Load
-                </button>
-                <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
-                <br><br>
-                <button title="Add Question over REST to DB" type="button" data-toggle="modal"
+                    </button>
+                    <input id="files" type="file" ng-file-select="onFileSelect($files)" style="display: none">
+                    <br><br>
+                    <button title="Add Question over REST to DB" type="button" data-toggle="modal"
                         data-target="#myModal">Add
-                    Question
-                </button>
+                        Question
+                    </button>
 
-            </div>
+                </div>
 
-            <div class="container">
-                <!-- MODAL DLG ADD QUESTION -->
-                <div class="modal" id="myModal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
+                <div class="container">
+                    <!-- MODAL DLG ADD QUESTION -->
+                    <div class="modal" id="myModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
 
-                            <!-- Modal Header -->
-                            <div class="modal-header">
-                                <h4 class="modal-title">Add Question</h4>
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            </div>
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Add Question</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
 
-                            <!-- Modal body -->
-                            <div class="modal-body">
+                                <!-- Modal body -->
                                 <form>
-                                    <label for="txQ">Your Question:</label>
-                                    <!-- <br> -->
-                                    <input type="text" ng-model="userQuestion">
-                                    <br>
-                                    <label for="txQ">Your Category:</label>
-                                    <!-- <br> -->
-                                    <select name="singleSelect" id="singleSelect" ng-model='categoryIdModel'>
-                                        <option value="">-----Please select-----</option>
-                                        <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}
-                                        </option>
-                                    </select>
-                                    <br>
-                                    <label for="txCA">Correct Answer:</label>
-                                    <!-- <br> -->
-                                    <input type="text" ng-model="userCorrectAnswer">
-                                    <br>
-                                    <label for="txA">Available Answers (separated with comma):</label>
-                                    <br>
-                                    <textarea id="textareaEdit" ng-model="userAnswers"></textarea>
-                                    <br>
-                                    <!-- <button ng-click="addQuestion()">Add Question</button> -->
-                                    <!-- <br> -->
-                                    <label for="err">{{errorText}}</label>
+                                    <div class="modal-body">
+                                        <!-- <form>
+                                        <label for="txQ">Your Question:</label>
+                               
+                                        <input type="text" ng-model="userQuestion">
+                                        <br>
+                                        <label for="txQ">Your Category:</label>
+                                        
+                                        <select name="singleSelect" id="singleSelect" ng-model='categoryIdModel'>
+                                            <option value="">-----Please select-----</option>
+                                            <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}
+                                            </option>
+                                        </select>
+                                        <br>
+                                        <label for="txCA">Correct Answer:</label>
+                                      
+                                        <input type="text" ng-model="userCorrectAnswer">
+                                        <br>
+                                        <label for="txA">Available Answers (separated with comma):</label>
+                                        <br>
+                                        <textarea id="textareaEdit" ng-model="userAnswers"></textarea>
+                                        <br>
+                                      
+                                        <label for="err">{{errorText}}</label>
+                                    </form> -->
+
+
+                                        <div class="form-group row">
+                                            <label for="yourQuestion" class="col-4 col-form-label">Your question</label>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text"></div>
+                                                    </div>
+                                                    <input ng-model="userQuestion" id="yourQuestion" name="yourQuestion"
+                                                        type="text" required="required" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="select" class="col-4 col-form-label">Your category</label>
+                                            <div class="col-8">
+                                                <select ng-model='categoryIdModel' id="select" name="select"
+                                                    required="required" class="custom-select">
+                                                    <!-- <option>-----Please select-----</option> -->
+                                                    <option ng-repeat="c in categoryList" ng-value='{{c.id}}'>{{c.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="text" class="col-4 col-form-label">Correct answer</label>
+                                            <div class="col-8">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text"></div>
+                                                    </div>
+                                                    <input ng-model="userCorrectAnswer" id="text" name="text"
+                                                        type="text" required="required" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="textarea" class="col-4 col-form-label">Available answers
+                                                (separated with ;)</label>
+                                            <div class="col-8">
+                                                <textarea ng-model="userAnswers" id="textarea" name="textarea" cols="40"
+                                                    rows="4" required="required" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button ng-click="modalDlgAddQuestion()" name="submit" type="submit"
+                                            class="btn btn-primary">Add
+                                            Question</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
                                 </form>
                             </div>
 
-                            <!-- Modal footer -->
-                            <div class="modal-footer">
-                                <button type="button" ng-click="modalDlgAddQuestion()" class="btn btn-success">Add
-                                    Question
-                                </button>
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            </div>
-
+                            <br>
+                            <br>
+                            <hr>
                         </div>
                     </div>
                 </div>
+
             </div>
+            <!-- <br> -->
 
-        </div>
-        <!-- <br> -->
+            <!-- RESULTS -->
+            <div class="basic_background" ng-hide="!resultsVisibled">
+                <h2 class="titles" style="text-align: left">
+                    Results</h2>
+                <div style="text-align: center;display: block">
 
-        <!-- RESULTS -->
-        <div class="basic_background" ng-hide="!resultsVisibled">
-            <h2 class="titles" style="text-align: left">
-                Results</h2>
-            <div style="text-align: center;display: block">
+                    <strong>
+                        You have achieved the score <h2>{{resultPercent | number : 2}} %</h2>
+                    </strong>
 
-                <strong>
-                    You have achieved the score <h2>{{resultPercent | number : 2}} %</h2>
-                </strong>
-
+                </div>
+                <br>
+                <table class="resultsAchieved" ng-if="resultPercent !== 100">
+                    <thead>
+                        <tr>
+                            <th>num.</th>
+                            <th>question</th>
+                            <th>correct answer</th>
+                            <th>your answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="q in answerListByUser">
+                            <td>{{q.number}}</td>
+                            <td>{{q.question}}</td>
+                            <td>{{q.answerCorrect}}</td>
+                            <td style="text-decoration: line-through;color: red">{{q.answerByUser}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <br>
-            <table class="resultsAchieved" ng-if="resultPercent !== 100">
-                <thead>
-                <tr>
-                    <th>num.</th>
-                    <th>question</th>
-                    <th>correct answer</th>
-                    <th>your answer</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="q in answerListByUser">
-                    <td>{{q.number}}</td>
-                    <td>{{q.question}}</td>
-                    <td>{{q.answerCorrect}}</td>
-                    <td style="text-decoration: line-through;color: red">{{q.answerByUser}}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <br>
 
+        </div>
     </div>
-</div>
 </body>
 
 </html>
