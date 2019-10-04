@@ -176,10 +176,11 @@
                                         <div class="form-group row">
                                             <label for="select" class="col-4 col-form-label">Your category</label>
                                             <div class="col-8">
-                                                <select ng-model='categoryIdModel' id="select" name="select"
-                                                    required="required" class="custom-select">
+                                                <select ng-model="categoryIdModel" id="singleSelect" name="singleSelect"
+                                                        required="required" class="custom-select">
                                                     <!-- <option>-----Please select-----</option> -->
-                                                    <option ng-repeat="c in categoryList" ng-value='{{c.id}}'>{{c.name}}</option>
+                                                    <option ng-repeat="c in categoryList" value='{{c.id}}'>{{c.name}}
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>

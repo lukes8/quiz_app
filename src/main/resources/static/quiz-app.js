@@ -272,6 +272,18 @@
 
         }
 
+//todo
+        var wait = function() {
+            var deferred = $q.defer();
+            setTimeout(function() {
+              // Reject 3 out of 10 times to simulate 
+              // some business logic.
+              if (Math.random() > 0.7) deferred.reject('hell');
+              else deferred.resolve('world');
+            }, 1000);
+            return deferred.promise;
+          };
+
         $scope.clear = function () {
             $scope.text = "clicked clear";
             angular.forEach(_this.questionList, function (value, key) {
@@ -322,6 +334,7 @@
             $http.get($scope.URL_REST_API_CATEGORY).then(
                 function successCallback(response) {
                     $scope.categoryList = [];
+                    _this.log('Categories loaded');
                     angular.forEach(response.data, function (value, key) {
                         $scope.addNewCategory(value);
                     });
