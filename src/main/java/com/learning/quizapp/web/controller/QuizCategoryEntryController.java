@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/quiz-category")
+@CrossOrigin
 public class QuizCategoryEntryController {
 
     @Autowired

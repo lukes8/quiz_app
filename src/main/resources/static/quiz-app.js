@@ -87,6 +87,13 @@
         $scope.URL_REST_API_CATEGORY = $scope.URL_BASE + "/rest/quiz-category";
         $scope.URL_REST_API_QUESTION = $scope.URL_BASE + "/rest/quiz-question";
 
+        $scope.msgBoxHeader = "None";
+        $scope.msgBoxContent = "No details";
+
+        $scope.MSG_SUCCESS_GENERAL = "Success";
+        $scope.MSG_ERROR_GENERAL = "Failed";
+        $scope.msgBoxState = 0; // state greather or equal than 0 -> positive, state lower than 0 -> negative
+
         $scope.isLoading = false;
         $scope.text = "...";
         $scope.logEnabled = true;
@@ -272,6 +279,18 @@
 
         }
 
+        //todo
+        var wait = function (calledFunc, time) {
+
+            _this.isLoading = true;
+
+            $timeout(function () {
+                _this.createQuestion();
+                _this.isLoading = false;
+            }, 2000);
+
+        };
+
         $scope.clear = function () {
             $scope.text = "clicked clear";
             angular.forEach(_this.questionList, function (value, key) {
@@ -304,17 +323,15 @@
         $scope.totalCategoryQuestions = function (category) {
             //         console.log(category);
 
-            var vm = $scope;
             let count = 0;
-            angular.forEach(vm.questionList, function (value) {
+            angular.forEach(_this.questionList, function (value) {
                 if (value.categoryId === category.id) count += 1;
             });
             return count;
         }
 
         $scope.setImage = function (imgUrl) {
-            var vm = $scope;
-            vm.modalSettings = { imageUrl: imgUrl };
+            _this.modalSettings = { imageUrl: imgUrl };
         };
 
         $scope.loadCategories = function () {
@@ -322,6 +339,7 @@
             $http.get($scope.URL_REST_API_CATEGORY).then(
                 function successCallback(response) {
                     $scope.categoryList = [];
+                    _this.log('Categories loaded');
                     angular.forEach(response.data, function (value, key) {
                         $scope.addNewCategory(value);
                     });
@@ -402,12 +420,21 @@
                     _this.log(response);
                     _this.errorText = "Question Added";
                     _this.loadQuestions();
+                    _this.msgBoxHeader = _this.MSG_SUCCESS_GENERAL;
+                    _this.msgBoxContent = "Question added";
+                    _this.msgBoxState = 0;
+                    $('.bd-example-modal-sm').modal('show');
                 },
                 function errorCallback(response) {
                     _this.log("not added");
                     _this.errorText = "Question not added";
+                    _this.msgBoxHeader = _this.MSG_ERROR_GENERAL;
+                    _this.msgBoxContent = "No details";
+                    _this.msgBoxState = -1;
+                    $('.bd-example-modal-sm').modal('show');
                 }
             );
+
         }
 
         $scope.modalDlgAddQuestion = function () {
@@ -441,7 +468,12 @@
                     //validation end
                     //new question obj
                     if (errors === false) {
-                        _this.createQuestion();
+
+                        _this.isLoading = true;
+                        $timeout(function () {
+                            _this.createQuestion();
+                            _this.isLoading = false;
+                        }, 1000);
                     }
                 }
             }
@@ -451,8 +483,12 @@
         // MAIN 
         console.log("MAIN BEGIN");
 
-        $scope.loadCategories();
-        $scope.loadQuestions();
+        _this.isLoading = true;
+        $timeout(function () {
+            _this.loadCategories();
+            _this.loadQuestions();
+            _this.isLoading = false;
+        }, 1000);
 
         console.log("MAIN END");
     };

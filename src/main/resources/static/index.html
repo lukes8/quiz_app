@@ -37,6 +37,17 @@
         <div id="spinner"></div>
     </div>
 
+    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div ng-class=" { 'alert alert-success': msgBoxState == 0, 'alert alert-danger': msgBoxState == -1 } ">
+                <strong>{{msgBoxHeader}}</strong>
+                <br>
+                {{msgBoxContent}}
+            </div>
+        </div>
+    </div>
+
     <div id="quiz">
         <div>
             <h1>Quiz Application</h1>
@@ -162,7 +173,8 @@
 
 
                                         <div class="form-group row">
-                                            <label for="yourQuestion" class="col-4 col-form-label">Your question</label>
+                                            <label for="yourQuestion" class="col-4 col-form-label">Your
+                                                question</label>
                                             <div class="col-8">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -176,10 +188,12 @@
                                         <div class="form-group row">
                                             <label for="select" class="col-4 col-form-label">Your category</label>
                                             <div class="col-8">
-                                                <select ng-model='categoryIdModel' id="select" name="select"
-                                                    required="required" class="custom-select">
+                                                <select ng-model="categoryIdModel" id="singleSelect" name="singleSelect"
+                                                        required="required" class="custom-select">
                                                     <!-- <option>-----Please select-----</option> -->
-                                                    <option ng-repeat="c in categoryList" ng-value='{{c.id}}'>{{c.name}}</option>
+                                                    <option ng-repeat="c in categoryList" value='{{c.id}}'>
+                                                        {{c.name}}
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
@@ -209,7 +223,7 @@
                                     <!-- Modal footer -->
                                     <div class="modal-footer">
                                         <button ng-click="modalDlgAddQuestion()" name="submit" type="submit"
-                                            class="btn btn-primary">Add
+                                                class="btn btn-primary" data-dismiss="modal">Add
                                             Question</button>
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                     </div>
