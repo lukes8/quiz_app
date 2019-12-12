@@ -6,6 +6,31 @@ button:hover {
     cursor: pointer;
 }
 
+.container {
+    /* padding: 2rem 0rem; */
+}
+
+.table-image {
+    td, th {
+        vertical-align: middle;
+    }
+}
+
+.bg-img {
+    /* The image used */
+    /* background-image: url("https://i.stack.imgur.com/jGlzr.png"); */
+    min-height: 380px;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+/* img {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+} */
 
 #category {
     width: 800px;
@@ -21,7 +46,7 @@ button:hover {
     width: 800px;
     margin-right: auto;
     margin-left: auto;
-    background-color: rgba(185, 140, 82, 0.445);
+    background-color: rgba(185, 140, 82, 0.699);
     margin-top: 20px;
     padding-bottom: 20px;
     border-radius: 10px;
@@ -61,13 +86,13 @@ ol#ol_question_list li {
 }
 
 #chb_answer_list {
-    padding: 10px;
-    padding-left: 30px;
+    /* padding: 10px; */
+    /* padding-left: 30px; */
 }
 
 table.resultsAchieved {
-    border: 1px solid #FFFFFF;
-    background-color: #D0E4F5;
+    border: 1px solid rgba(14, 121, 85, 0.13);
+    background-color: rgba(14, 121, 85, 0.13);
     width: 90%;
     text-align: center;
     border-collapse: collapse;
@@ -75,8 +100,16 @@ table.resultsAchieved {
     margin-right: auto;
 }
 
+table.resultsAchieved img {
+    /* line-height: 15px;
+    min-height: 15px; */
+    /* height: 200px; */
+    max-width: 30%;
+    height: auto;
+}
+
 table.resultsAchieved td, table.resultsAchieved th {
-    border: 1px solid #FFFFFF;
+    border: 1px solid rgba(14, 121, 85, 0.13);
     padding: 4px 2px;
 }
 
@@ -85,8 +118,8 @@ table.resultsAchieved tbody td {
 }
 
 table.resultsAchieved thead {
-    background: #0B6FA4;
-    border-bottom: 5px solid #FFFFFF;
+    background: rgb(14, 121, 85);
+    /* border-bottom: 5px solid rgb(14, 121, 85); */
 }
 
 table.resultsAchieved thead th {
@@ -94,7 +127,7 @@ table.resultsAchieved thead th {
     font-weight: bold;
     color: #FFFFFF;
     text-align: center;
-    border-left: 2px solid #FFFFFF;
+    /* border-left: 2px solid  rgb(14, 121, 85); */
 }
 
 table.resultsAchieved thead th:first-child {
@@ -215,4 +248,68 @@ img:hover {
     text-align: center;
     padding-top: 25%;
     opacity: .80;
+}
+
+/* checkbox */
+
+.custom-checkbox {
+    min-height: 1rem;
+    padding-left: 0;
+    margin-right: 0;
+    cursor: pointer;
+    /* text-align: center; */
+}
+
+.custom-checkbox .custom-control-indicator {
+    content: "";
+    display: inline-block;
+    position: relative;
+    width: 30px;
+    height: 10px;
+    background-color: #818181;
+    border-radius: 15px;
+    margin-right: 10px;
+    -webkit-transition: background .3s ease;
+    transition: background .3s ease;
+    vertical-align: middle;
+    margin: 0 16px;
+    box-shadow: none;
+}
+
+.custom-checkbox .custom-control-indicator:after {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #f1f1f1;
+    border-radius: 21px;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
+    left: -2px;
+    top: -4px;
+    -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+    transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-indicator {
+    background-color: #84c7c1;
+    background-image: none;
+    box-shadow: none !important;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-indicator:after {
+    background-color: #84c7c1;
+    left: 15px;
+}
+
+.custom-checkbox .custom-control-input:focus~.custom-control-indicator {
+    box-shadow: none !important;
+}
+
+.center {
+    text-align: center;
+}
+
+.small {
+    font-size: 6px;
 }

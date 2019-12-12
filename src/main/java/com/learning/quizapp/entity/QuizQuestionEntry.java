@@ -12,6 +12,7 @@ public class QuizQuestionEntry {
     private String question;
     private String correctAnswer;
     private String possibleAnswers;
+    private String imageUrl;
 
     public Long getId() {
         return id;
@@ -51,5 +52,13 @@ public class QuizQuestionEntry {
 
     public void setPossibleAnswers(String possibleAnswers) {
         this.possibleAnswers = possibleAnswers;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
