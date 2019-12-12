@@ -70,9 +70,9 @@ public class QuizQuestionEntryController {
         return json;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/importExcel")
-    public String importExcel() throws Exception {
-        Long res = quizQuestionEntryService.importQuizQuestionExcel();
+    @RequestMapping(method = RequestMethod.GET, value = "/importExcel/{cleanupData}")
+    public String importExcel(@PathVariable Boolean cleanupData) throws Exception {
+        Long res = quizQuestionEntryService.importQuizQuestionExcel(cleanupData);
         return "DONE" + res;
     }
 

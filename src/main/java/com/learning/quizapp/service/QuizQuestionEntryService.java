@@ -6,5 +6,5 @@ public interface QuizQuestionEntryService {
 
     InputStream exportQuizQuestionExcel();
 
-    Long importQuizQuestionExcel() throws Exception;
+    Long importQuizQuestionExcel(Boolean cleanupData) throws Exception;
 }

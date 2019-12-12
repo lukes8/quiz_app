@@ -85,7 +85,7 @@ public class QuizQuestionEntryServiceImpl implements QuizQuestionEntryService {
     }
 
     @Override
-    public Long importQuizQuestionExcel() throws Exception {
+    public Long importQuizQuestionExcel(Boolean cleanupData) throws Exception {
 
         try {
             FileInputStream file = new FileInputStream(new File("quiz_question_entry_data.xls"));
@@ -154,7 +154,12 @@ public class QuizQuestionEntryServiceImpl implements QuizQuestionEntryService {
             }
 
             if (all.size() != 0) {
+                if (cleanupData == true) {
+                    quizQuestionEntryRepository.deleteAll();
+                    System.out.println("data cleanup");
+                }
                 quizQuestionEntryRepository.saveAll(all);
+                quizQuestionEntryRepository.flush();
             }
             file.close();
         } catch (Exception e) {
