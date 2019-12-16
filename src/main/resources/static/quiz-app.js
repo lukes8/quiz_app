@@ -97,6 +97,7 @@
         $scope.isLoading = false;
         $scope.text = "...";
         $scope.logEnabled = true;
+        $scope.useImg = false;
         $scope.checkboxModel = {
             value1: false,
             value2: false,
@@ -157,7 +158,7 @@
                 answerCorrect: "Dub",
                 categoryId: 3,
                 isTypeImg: true,
-                imgUrl: "dub.jpg"
+                imageUrl: "/img/dub.jpg"
             },
             {
                 number: 4,
@@ -167,7 +168,7 @@
                 answerCorrect: "Buk",
                 categoryId: 3,
                 isTypeImg: true,
-                imgUrl: "buk.jpg"
+                imageUrl: "/img/buk.jpg"
             },
             {
                 number: 5,
@@ -177,7 +178,7 @@
                 answerCorrect: "Borovice",
                 categoryId: 3,
                 isTypeImg: true,
-                imgUrl: "borovice.jpg"
+                imageUrl: "/img/borovice.jpg"
             },
             {
                 number: 6,
@@ -187,7 +188,7 @@
                 answerCorrect: "Lipa",
                 categoryId: 3,
                 isTypeImg: true,
-                imgUrl: "lipa.jpg"
+                imageUrl: "/img/lipa.jpg"
             }
         ];
         $scope.answerListByUser = [];
@@ -197,6 +198,7 @@
         $scope.userQuestion = "";
         $scope.userAnswers = "";
         $scope.userCorrectAnswer = "";
+        $scope.imageUrl = "";
         $scope.errorText = "...";
         $scope.selectedCategoryId = 0;
         $scope.categoryIdModel = -1;
@@ -364,6 +366,10 @@
                 },
                 function errorCallback(response) {
                     _this.log("Unable to perform get request");
+                    _this.msgBoxHeader = _this.MSG_ERROR_GENERAL;
+                    _this.msgBoxContent = "No details";
+                    _this.msgBoxState = -1;
+                    $('.bd-example-modal-sm').modal('show');
                 }
             );
         };
@@ -388,7 +394,8 @@
                 answers: answers_,
                 answerByUser: "",
                 answerCorrect: question.correctAnswer,
-                categoryId: parseInt(question.categoryId)
+                categoryId: parseInt(question.categoryId),
+                imageUrl: question.imageUrl
             };
             vm.questionList.push(newQ);
             _this.log("q added");
@@ -403,13 +410,14 @@
         };
 
         $scope.createQuestion = function () {
-            var vm = $scope;
+
             var newQ = {
                 id: null,
-                question: vm.userQuestion,
-                possibleAnswers: vm.userAnswers,
-                correctAnswer: vm.userCorrectAnswer,
-                categoryId: parseInt(vm.categoryIdModel)
+                question: _this.userQuestion,
+                possibleAnswers: _this.userAnswers,
+                correctAnswer: _this.userCorrectAnswer,
+                categoryId: parseInt(_this.categoryIdModel),
+                imageUrl: _this.useImg === true ? _this.imageUrl : null
             };
 
             var headers = { 'Content-Type': 'application/json' };

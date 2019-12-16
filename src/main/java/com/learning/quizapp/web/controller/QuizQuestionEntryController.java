@@ -3,9 +3,11 @@ package com.learning.quizapp.web.controller;
 import com.google.gson.Gson;
 import com.learning.quizapp.entity.QuizQuestionEntry;
 import com.learning.quizapp.repository.QuizQuestionEntryRepository;
+import com.learning.quizapp.service.QuizQuestionEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +18,9 @@ public class QuizQuestionEntryController {
 
     @Autowired
     private QuizQuestionEntryRepository quizQuestionEntryRepository;
+
+    @Autowired
+    private QuizQuestionEntryService quizQuestionEntryService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String findAll() {
@@ -63,6 +68,18 @@ public class QuizQuestionEntryController {
         Gson gson = new Gson();
         String json = gson.toJson(save);
         return json;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/importExcel/{cleanupData}")
+    public String importExcel(@PathVariable Boolean cleanupData) throws Exception {
+        Long res = quizQuestionEntryService.importQuizQuestionExcel(cleanupData);
+        return "DONE" + res;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/exportExcel")
+    public String exportExcel() {
+        InputStream res = quizQuestionEntryService.exportQuizQuestionExcel();
+        return "DONE";
     }
 
     private Long getNewId() {
