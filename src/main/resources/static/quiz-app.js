@@ -104,6 +104,25 @@
             value3: false
         };
         $scope.chbAnswer = "";
+        $scope.answerListByUser = [];
+        $scope.resultPercent = 0;
+        $scope.resultsVisibled = false;
+        $scope.resultsVisibledText = "Show results";
+        
+        $scope.userQuestion = "";
+        $scope.userAnswers = "";
+        $scope.userCorrectAnswer = "";
+        $scope.userCategory = "";
+        $scope.userDescription = "";
+
+        $scope.imageUrl = "";
+        $scope.errorText = "...";
+        $scope.selectedCategoryId = 0;
+        $scope.categoryIdModel = -1;
+        $scope.selectCategoryDisplayed = "All";
+        $scope.modalSettings = {};
+        //$scope.categoryList[0].id;   //default
+
         $scope.categoryList = [
             {
                 id: 0,
@@ -191,20 +210,7 @@
                 imageUrl: "/img/lipa.jpg"
             }
         ];
-        $scope.answerListByUser = [];
-        $scope.resultPercent = 0;
-        $scope.resultsVisibled = false;
-        $scope.resultsVisibledText = "Show results";
-        $scope.userQuestion = "";
-        $scope.userAnswers = "";
-        $scope.userCorrectAnswer = "";
-        $scope.imageUrl = "";
-        $scope.errorText = "...";
-        $scope.selectedCategoryId = 0;
-        $scope.categoryIdModel = -1;
-        $scope.selectCategoryDisplayed = "All";
-        $scope.modalSettings = {};
-        //$scope.categoryList[0].id;   //default
+       
 
         // METHODS
         $scope.categoryFilter = function (q) {
@@ -445,6 +451,39 @@
 
         }
 
+        $scope.createCategory = function () {
+
+            var newObj = {
+                id: null,
+                name: _this.userCategory,
+                description: _this.userDescription
+            };
+
+            var headers = { 'Content-Type': 'application/json' };
+            var parameter = JSON.stringify(newObj);
+            $http.post($scope.URL_REST_API_CATEGORY, parameter).then(
+                function successCallback(response) {
+                    _this.log("Added ");
+                    _this.log(response);
+                    _this.errorText = "Category Added";
+                    _this.loadCategories();
+                    _this.msgBoxHeader = _this.MSG_SUCCESS_GENERAL;
+                    _this.msgBoxContent = "Category added";
+                    _this.msgBoxState = 0;
+                    $('.bd-example-modal-sm').modal('show');
+                },
+                function errorCallback(response) {
+                    _this.log("not added");
+                    _this.errorText = "Category not added";
+                    _this.msgBoxHeader = _this.MSG_ERROR_GENERAL;
+                    _this.msgBoxContent = "No details";
+                    _this.msgBoxState = -1;
+                    $('.bd-example-modal-sm').modal('show');
+                }
+            );
+
+        }
+
         $scope.modalDlgAddQuestion = function () {
             var errors = false;
 
@@ -484,6 +523,26 @@
                         }, 1000);
                     }
                 }
+            }
+
+        }
+
+        $scope.modalDlgAddCategory = function () {
+            var errors = false;
+
+            //validation begin
+            if (_this.userCategory === "") {
+                _this.errorText = "You must enter category field!";
+                errors = true;
+            } 
+
+            if (errors === false) {
+
+                _this.isLoading = true;
+                $timeout(function () {
+                    _this.createCategory();
+                    _this.isLoading = false;
+                }, 1000);
             }
 
         }

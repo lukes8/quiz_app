@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.*;
 
@@ -72,11 +71,17 @@ public class QuizQuestionEntryServiceImpl implements QuizQuestionEntryService {
             }
         }
         try {
+            //TODO outputstream
+//            OutputStreamWriter out = new OutputStreamWriter(new File("quiz_question_entry_data.xls"));
+//            workbook.write(out);
+//            out.close();
+//            System.out.println("written successfully on disk.");
+
             //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File("quiz_question_entry_data.xls"));
-            workbook.write(out);
-            out.close();
-            System.out.println("written successfully on disk.");
+//            FileOutputStream out = new FileOutputStream(new File("quiz_question_entry_data.xls"));
+//            workbook.write(out);
+//            out.close();
+//            System.out.println("written successfully on disk.");
         } catch (Exception e) {
             e.printStackTrace();
         }
