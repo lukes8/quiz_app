@@ -50,7 +50,45 @@ public class QuizCategoryEntryController {
         return "ADDED";
     }
 
-    private Long getNewId() throws Exception {
+    @RequestMapping(method = RequestMethod.POST)
+    public String create(@RequestBody QuizCategoryEntry model) {
+
+        if (model == null) {
+            return "model is null!";
+        }
+
+        if (model.getId() == null) {
+            model.setId(getNewId());
+        }
+
+        Optional<QuizCategoryEntry> entry = quizCategoryEntryRepository.findById(model.getId());
+        if (entry.isPresent()) {
+            return "Category already exists!";
+        }
+
+        QuizCategoryEntry save = null;
+        save = quizCategoryEntryRepository.save(model);
+        if (save == null) {
+            return "NONE";
+        }
+
+        Gson gson = new Gson();
+        String json = gson.toJson(save);
+        return json;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/delete/{id}")
+    public String delete(@PathVariable Long id) throws Exception {
+
+        Optional<QuizCategoryEntry> entryOptional = quizCategoryEntryRepository.findById(id);
+        if (!entryOptional.isPresent()) {
+            throw new Exception("Cannot be deleted. Entry does not exist.");
+        }
+        quizCategoryEntryRepository.deleteById(id);
+        return "DELETED";
+    }
+
+    private Long getNewId() {
         List<QuizCategoryEntry> all = quizCategoryEntryRepository.findAll();
         if (all != null && all.size() != 0) {
             Long lastId = all.get(0).getId();
@@ -59,25 +97,8 @@ public class QuizCategoryEntryController {
                     lastId = all.get(i).getId();
                 }
             }
-            return lastId+1;
+            return lastId + 1;
         }
         return 0L;
     }
-
-    @RequestMapping(method = RequestMethod.POST)
-    public String create(@RequestBody QuizCategoryEntry model) {
-
-        QuizCategoryEntry save = null;
-        if (model != null) {
-            save = quizCategoryEntryRepository.save(model);
-        }
-
-        if (save != null) {
-            Gson gson = new Gson();
-            String json = gson.toJson(save);
-            return json;
-        }
-        return "NONE";
-    }
-
 }

@@ -5,6 +5,10 @@ import com.learning.quizapp.entity.QuizQuestionEntry;
 import com.learning.quizapp.repository.QuizQuestionEntryRepository;
 import com.learning.quizapp.service.QuizQuestionEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
@@ -70,6 +74,17 @@ public class QuizQuestionEntryController {
         return json;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/delete/{id}")
+    public String delete(@PathVariable Long id) throws Exception {
+
+        Optional<QuizQuestionEntry> entryOptional = quizQuestionEntryRepository.findById(id);
+        if (!entryOptional.isPresent()) {
+            throw new Exception("Cannot be deleted. Entry does not exist.");
+        }
+        quizQuestionEntryRepository.deleteById(id);
+        return "DELETED";
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/importExcel/{cleanupData}")
     public String importExcel(@PathVariable Boolean cleanupData) throws Exception {
         Long res = quizQuestionEntryService.importQuizQuestionExcel(cleanupData);
@@ -77,10 +92,23 @@ public class QuizQuestionEntryController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/exportExcel")
-    public String exportExcel() {
+    public ResponseEntity<InputStreamResource> exportExcel() {
         InputStream res = quizQuestionEntryService.exportQuizQuestionExcel();
-        return "DONE";
+        String filename = "test.csv";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
+        headers.add("Set-Cookie", "fileDownload=true; path=/");
+        MediaType mediaType = MediaType.parseMediaType("text/csv");
+        return ((ResponseEntity.BodyBuilder) ResponseEntity.ok().headers(headers)).contentType(mediaType).body(new InputStreamResource(res));
     }
+//    @RequestMapping(method = RequestMethod.GET, value = "/exportExcel")
+//    public String exportExcel() {
+//        InputStream res = quizQuestionEntryService.exportQuizQuestionExcel();
+//        return "DONE";
+//    }
 
     private Long getNewId() {
         List<QuizQuestionEntry> all = quizQuestionEntryRepository.findAll();
